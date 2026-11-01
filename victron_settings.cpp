@@ -1,6 +1,7 @@
 #include "victron_settings.h"
 #include "victron_client.h"
 #include "ui_main.h"
+#include "ui_control_style.h"
 
 namespace {
 lv_obj_t *root,*enabled,*keepalive,*show_tab,*starter_source,*battery_instance,*host,*port,*portal,*instance,*user,*password,*relay_names[2],*status;
@@ -9,6 +10,7 @@ lv_obj_t *field(lv_obj_t *parent,const char *name,const char *value,int y,int ma
     lv_obj_t *l=lv_label_create(parent);lv_label_set_text(l,name);lv_obj_set_pos(l,0,y);
     lv_obj_set_style_text_font(l,&lv_font_montserrat_14,0);
     lv_obj_t *area=lv_textarea_create(parent);lv_textarea_set_one_line(area,true);
+    ui_control_surface_style(area);
     lv_textarea_set_max_length(area,maxlen);lv_textarea_set_text(area,value);
     lv_obj_set_pos(area,0,y+24);lv_obj_set_size(area,426,44);
     lv_obj_set_style_text_font(area,&lv_font_montserrat_14,0);
@@ -98,10 +100,10 @@ bool victron_apply_settings(JsonVariantConst doc,String &error) {
 }
 void ui_victron_settings_reset(){root=enabled=keepalive=show_tab=starter_source=battery_instance=host=port=portal=instance=user=password=status=nullptr;relay_names[0]=relay_names[1]=nullptr;}
 void ui_victron_settings_build(lv_obj_t *parent,lv_event_cb_t callback) {
-    root=parent;lv_obj_add_flag(parent,LV_OBJ_FLAG_SCROLLABLE);lv_obj_set_scroll_dir(parent,LV_DIR_VER);
+    root=parent;lv_obj_set_style_text_color(parent,ui_theme_text(),0);lv_obj_add_flag(parent,LV_OBJ_FLAG_SCROLLABLE);lv_obj_set_scroll_dir(parent,LV_DIR_VER);
     lv_obj_set_style_pad_bottom(parent,90,0);
     lv_obj_t *title=lv_label_create(parent);lv_label_set_text(title,"Victron GX");lv_obj_set_pos(title,0,0);
-    lv_obj_set_style_text_font(title,&lv_font_montserrat_18,0);lv_obj_set_style_text_color(title,lv_color_hex(UI_COLOR_PRIMARY),0);
+    lv_obj_set_style_text_font(title,&lv_font_montserrat_18,0);lv_obj_set_style_text_color(title,ui_theme_primary(),0);
     enabled=toggle(parent,"MQTT-Anbindung",state.victron_enabled,35);
     keepalive=toggle(parent,"Eigener Victron-Keepalive",state.victron_keepalive,75);
     show_tab=toggle(parent,"Victron-Tab anzeigen",state.tab_enabled[TAB_VICTRON],115);

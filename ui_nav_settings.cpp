@@ -27,7 +27,7 @@ static void update_row_display() {
         if (rows[i].lbl_icon) {
             lv_label_set_text(rows[i].lbl_icon, TAB_METAS[tab_id].icon);
             lv_obj_set_style_text_font(rows[i].lbl_icon, tab_id == TAB_VICTRON ? &lv_font_montserrat_24 : &ui_font_mdi_32, 0);
-            lv_obj_set_style_text_color(rows[i].lbl_icon, cur_enabled[tab_id] ? lv_color_hex(UI_COLOR_PRIMARY) : ui_theme_muted(), 0);
+            lv_obj_set_style_text_color(rows[i].lbl_icon, cur_enabled[tab_id] ? ui_theme_primary() : ui_theme_muted(), 0);
         }
         if (rows[i].lbl_name) {
             const char *name = TAB_METAS[tab_id].name;
@@ -93,9 +93,9 @@ static void build_rows(lv_obj_t *parent) {
         // Clean card without heavy shadows
         lv_obj_t *card = lv_obj_create(parent);
         lv_obj_set_size(card, 440, 56);
-        lv_obj_set_style_radius(card, 10, 0);
+        lv_obj_set_style_radius(card, ui_radius_card(), 0);
         lv_obj_set_style_bg_color(card, ui_theme_card(), 0);
-        lv_obj_set_style_border_width(card, 1, 0);
+        lv_obj_set_style_border_width(card, ui_border_width(), 0);
         lv_obj_set_style_border_color(card, ui_theme_border(), 0);
         lv_obj_set_style_pad_all(card, 6, 0);
         lv_obj_clear_flag(card, LV_OBJ_FLAG_SCROLLABLE);
@@ -105,10 +105,10 @@ static void build_rows(lv_obj_t *parent) {
         lv_obj_t *btn_up = lv_btn_create(card);
         lv_obj_set_size(btn_up, 42, 42);
         lv_obj_align(btn_up, LV_ALIGN_LEFT_MID, 4, 0);
-        lv_obj_set_style_radius(btn_up, 8, 0);
+        lv_obj_set_style_radius(btn_up, ui_radius_button(), 0);
         lv_obj_set_style_bg_color(btn_up, ui_theme_track(), 0);
         lv_obj_set_style_border_color(btn_up, ui_theme_border(), 0);
-        lv_obj_set_style_border_width(btn_up, 1, 0);
+        lv_obj_set_style_border_width(btn_up, ui_border_width(), 0);
         if (i == 0) {
             lv_obj_add_state(btn_up, LV_STATE_DISABLED);
             lv_obj_set_style_bg_opa(btn_up, LV_OPA_30, LV_STATE_DISABLED);
@@ -117,7 +117,7 @@ static void build_rows(lv_obj_t *parent) {
         }
         lv_obj_t *lbl_up = lv_label_create(btn_up);
         lv_label_set_text(lbl_up, LV_SYMBOL_UP);
-        lv_obj_set_style_text_color(lbl_up, ui_theme_text(), 0);
+        lv_obj_set_style_text_color(lbl_up, ui_theme_btn_text(), 0);
         lv_obj_center(lbl_up);
         rows[i].btn_up = btn_up;
 
@@ -125,10 +125,10 @@ static void build_rows(lv_obj_t *parent) {
         lv_obj_t *btn_down = lv_btn_create(card);
         lv_obj_set_size(btn_down, 42, 42);
         lv_obj_align(btn_down, LV_ALIGN_LEFT_MID, 52, 0);
-        lv_obj_set_style_radius(btn_down, 8, 0);
+        lv_obj_set_style_radius(btn_down, ui_radius_button(), 0);
         lv_obj_set_style_bg_color(btn_down, ui_theme_track(), 0);
         lv_obj_set_style_border_color(btn_down, ui_theme_border(), 0);
-        lv_obj_set_style_border_width(btn_down, 1, 0);
+        lv_obj_set_style_border_width(btn_down, ui_border_width(), 0);
         if (i == TAB_COUNT - 1) {
             lv_obj_add_state(btn_down, LV_STATE_DISABLED);
             lv_obj_set_style_bg_opa(btn_down, LV_OPA_30, LV_STATE_DISABLED);
@@ -137,7 +137,7 @@ static void build_rows(lv_obj_t *parent) {
         }
         lv_obj_t *lbl_down = lv_label_create(btn_down);
         lv_label_set_text(lbl_down, LV_SYMBOL_DOWN);
-        lv_obj_set_style_text_color(lbl_down, ui_theme_text(), 0);
+        lv_obj_set_style_text_color(lbl_down, ui_theme_btn_text(), 0);
         lv_obj_center(lbl_down);
         rows[i].btn_down = btn_down;
 
@@ -230,10 +230,10 @@ static void open_nav_settings_deferred(void *) {
         lv_obj_t *back = lv_btn_create(header);
         lv_obj_set_size(back, 105, 42);
         lv_obj_align(back, LV_ALIGN_LEFT_MID, 8, 0);
-        lv_obj_set_style_radius(back, 8, 0);
+        lv_obj_set_style_radius(back, ui_radius_button(), 0);
         lv_obj_set_style_bg_color(back, ui_theme_track(), 0);
         lv_obj_set_style_border_color(back, ui_theme_border(), 0);
-        lv_obj_set_style_border_width(back, 1, 0);
+        lv_obj_set_style_border_width(back, ui_border_width(), 0);
         lv_obj_add_event_cb(back, [](lv_event_t *) {
             lv_async_call([](void *) {
                 lv_scr_load(scr_main);
@@ -244,7 +244,7 @@ static void open_nav_settings_deferred(void *) {
         lv_obj_t *back_lbl = lv_label_create(back);
         lv_label_set_text(back_lbl, LV_SYMBOL_LEFT " Zurück");
         lv_obj_set_style_text_font(back_lbl, &lv_font_montserrat_16, 0);
-        lv_obj_set_style_text_color(back_lbl, ui_theme_text(), 0);
+        lv_obj_set_style_text_color(back_lbl, ui_theme_btn_text(), 0);
         lv_obj_center(back_lbl);
 
         // Title
@@ -283,8 +283,10 @@ static void open_nav_settings_deferred(void *) {
         lv_obj_t *btn_save = lv_btn_create(footer);
         lv_obj_set_size(btn_save, 420, 46);
         lv_obj_center(btn_save);
-        lv_obj_set_style_radius(btn_save, 12, 0);
-        lv_obj_set_style_bg_color(btn_save, lv_color_hex(UI_COLOR_SUCCESS), 0);
+        lv_obj_set_style_radius(btn_save, ui_radius_button(), 0);
+        lv_obj_set_style_bg_color(btn_save, ui_theme_primary(), 0);
+        lv_obj_set_style_border_color(btn_save,ui_theme_border(),0);
+        lv_obj_set_style_border_width(btn_save,ui_border_width(),0);
         lv_obj_set_style_shadow_width(btn_save, 0, 0);
         lv_obj_add_event_cb(btn_save, save_and_restart_clicked, LV_EVENT_CLICKED, nullptr);
 

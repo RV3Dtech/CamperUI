@@ -1084,6 +1084,16 @@ static const char SETTINGS_HTML[] PROGMEM = R"rawliteral(
               <span class="slider"></span>
             </label>
           </div>
+          <div class="toggle-row" style="margin-bottom:12px;">
+            <div class="toggle-info">
+              <div class="toggle-title">Dimmer anzeigen</div>
+              <div class="toggle-desc">Blendet das Dimmer-Menü ein. Die Einzelauswahl bleibt gespeichert; Lampen werden nicht geschaltet.</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="show_dimmers" onchange="setTabEnabled(1, this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
           <div id="dimmersList"></div>
         </div>
 
@@ -1712,7 +1722,20 @@ static const char SETTINGS_HTML[] PROGMEM = R"rawliteral(
       }
     }
 
+    function setTabEnabled(tabId, enabled) {
+      tabEnabled[tabId] = !!enabled;
+      renderTabReorderList();
+    }
+
+    function syncDimmerVisibility() {
+      // TAB_DIMMERS = 1; one value serves both settings sections.
+      const enabled = tabEnabled[1] !== undefined ? tabEnabled[1] : true;
+      document.getElementById('show_dimmers').checked = enabled;
+      document.getElementById('dimmersList').style.display = enabled ? 'block' : 'none';
+    }
+
     function renderTabReorderList() {
+      syncDimmerVisibility();
       const wrap = document.getElementById('tabReorderList');
       wrap.innerHTML = '';
       tabOrder.forEach((tabId, idx) => {
@@ -1728,7 +1751,7 @@ static const char SETTINGS_HTML[] PROGMEM = R"rawliteral(
           </div>
           <div style="display:flex; align-items:center; gap:10px;">
             <label class="switch">
-              <input type="checkbox" onchange="tabEnabled[${tabId}] = this.checked" ${isEn ? 'checked' : ''}>
+              <input type="checkbox" onchange="setTabEnabled(${tabId}, this.checked)" ${isEn ? 'checked' : ''}>
               <span class="slider"></span>
             </label>
             <div class="reorder-btns">

@@ -214,8 +214,8 @@ void ui_build_temps(lv_obj_t *parent) {
         lv_obj_set_size(cards[i], 216, 60);
         lv_obj_set_style_bg_color(cards[i], ui_theme_card(), 0);
         lv_obj_set_style_border_color(cards[i], ui_theme_border(), 0);
-        lv_obj_set_style_border_width(cards[i], 1, 0);
-        lv_obj_set_style_radius(cards[i], 12, 0);
+        lv_obj_set_style_border_width(cards[i], ui_border_width(), 0);
+        lv_obj_set_style_radius(cards[i], ui_radius_card(), 0);
         lv_obj_set_style_pad_all(cards[i], 0, 0);
         lv_obj_clear_flag(cards[i], LV_OBJ_FLAG_SCROLLABLE);
         lv_obj_add_flag(cards[i], LV_OBJ_FLAG_CLICKABLE);
@@ -300,11 +300,11 @@ void ui_build_temps(lv_obj_t *parent) {
     lv_dropdown_set_options(dd_win, "1h\n6h\n12h\n24h");
     lv_obj_set_size(dd_win, 76, 28);
     lv_obj_align(dd_win, LV_ALIGN_TOP_RIGHT, -6, 2);
-    lv_obj_set_style_radius(dd_win, 8, 0);
+    lv_obj_set_style_radius(dd_win, ui_radius_button(), 0);
     lv_obj_set_style_bg_color(dd_win, ui_theme_card(), 0);
     lv_obj_set_style_border_color(dd_win, ui_theme_border(), 0);
-    lv_obj_set_style_border_width(dd_win, 1, 0);
-    lv_obj_set_style_text_color(dd_win, ui_theme_text(), 0);
+    lv_obj_set_style_border_width(dd_win, ui_border_width(), 0);
+    lv_obj_set_style_text_color(dd_win, ui_theme_btn_text(), 0);
     lv_obj_set_style_text_font(dd_win, &lv_font_montserrat_12, 0);
     lv_obj_set_style_pad_top(dd_win, 4, LV_PART_MAIN);
     lv_obj_set_style_pad_bottom(dd_win, 4, LV_PART_MAIN);
@@ -323,8 +323,8 @@ void ui_build_temps(lv_obj_t *parent) {
     lv_obj_set_style_pad_all(list, 6, 0);
     lv_obj_set_style_bg_color(list, ui_theme_card(), 0);
     lv_obj_set_style_border_color(list, ui_theme_border(), 0);
-    lv_obj_set_style_border_width(list, 1, 0);
-    lv_obj_set_style_radius(list, 8, 0);
+    lv_obj_set_style_border_width(list, ui_border_width(), 0);
+    lv_obj_set_style_radius(list, ui_radius_button(), 0);
     lv_obj_add_event_cb(dd_win, dd_win_event_cb, LV_EVENT_VALUE_CHANGED, nullptr);
 
     // Full-Width Line Chart (w = 386, h = 156)

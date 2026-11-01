@@ -86,6 +86,17 @@ static int jsonInt(JsonVariant v) {
     return atoi(s);
 }
 
+// SOC is transported as an integer, decimal number or numeric string.
+// Keep the established whole-percent UI, but never route a JSON float through
+// jsonInt(): its integer/string-only fallback would turn e.g. 91.9 into 0.
+static bool jsonBatterySoc(JsonVariant v, int &soc) {
+    if (!validEnergyNumber(v)) return false;
+    const float value = jsonFloat(v);
+    if (value < 0.0f || value > 100.0f) return false;
+    soc = static_cast<int>(value); // Same truncation as the existing string SOC.
+    return true;
+}
+
 static bool jsonBool(JsonVariant v) {
     if (v.isNull()) return false;
     if (v.is<bool>()) return v.as<bool>();
@@ -121,7 +132,7 @@ static const char* const LEVEL_KEYS[4]       = {"level1", "level2", "level3", "l
 static const char* const TEMP_KEYS[4]        = {"temp1", "temp2", "temp3", "temp4"};
 
 // --- Parsers ---
-// GET /batt -> { "VoltB": float|str, "Ampere": float|str, "battsoc": int|str }
+// GET /batt -> { "VoltB": float|str, "Ampere": float|str, "battsoc": int|float|str }
 static void parse_batt_json(const char *payload) {
     StaticJsonDocument<512> doc;
     if (deserializeJson(doc, payload)) return;
@@ -129,7 +140,12 @@ static void parse_batt_json(const char *payload) {
     StateLockGuard lock;
     if (validEnergyNumber(doc["VoltB"])) { state.bat_voltage = jsonFloat(doc["VoltB"]); state.battery_fields |= 1; state.bat_voltage_updated_ms = millis(); }
     if (validEnergyNumber(doc["Ampere"])) { state.bat_current = jsonFloat(doc["Ampere"]); state.battery_fields |= 2; state.bat_current_updated_ms = millis(); }
-    if (validEnergyNumber(doc["battsoc"])) { state.bat_soc = jsonInt(doc["battsoc"]); state.battery_fields |= 4; state.bat_soc_updated_ms = millis(); }
+    int soc;
+    if (jsonBatterySoc(doc["battsoc"], soc)) {
+        state.bat_soc = soc;
+        state.battery_fields |= 4;
+        state.bat_soc_updated_ms = millis();
+    }
     // Starter voltage / Lima
     if (doc.containsKey("starter_voltage")) {
         state.starter_voltage = jsonFloat(doc["starter_voltage"]);

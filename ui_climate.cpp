@@ -75,7 +75,7 @@ static void open_diagnostics(lv_event_t *) {
         lv_obj_set_style_pad_all(card, 0, 0);
         diagnostic_label(card, names[i], 10, 10, 192, &lv_font_montserrat_14);
         diagnostics_values[i] = diagnostic_label(card, "--", 10, 39, 192, &lv_font_montserrat_24);
-        lv_obj_set_style_text_color(diagnostics_values[i], lv_color_hex(UI_COLOR_PRIMARY), 0);
+        lv_obj_set_style_text_color(diagnostics_values[i], ui_theme_primary(), 0);
     }
     diagnostics_error = diagnostic_label(panel, "", 16, 320, 424, &lv_font_montserrat_14);
     lv_obj_set_height(diagnostics_error, 48);
@@ -706,12 +706,12 @@ void ui_build_climate(lv_obj_t *parent) {
     lv_obj_set_size(diagnosis, 54, 54);
     lv_obj_align_to(diagnosis, btn_start_stop, LV_ALIGN_OUT_RIGHT_MID, 12, 0);
     ui_chart_button_style(diagnosis, false);
-    lv_obj_set_style_radius(diagnosis, 14, 0); lv_obj_set_style_pad_all(diagnosis, 0, 0);
+    lv_obj_set_style_radius(diagnosis, ui_radius_button(), 0); lv_obj_set_style_pad_all(diagnosis, 0, 0);
     lv_obj_add_event_cb(diagnosis, open_diagnostics, LV_EVENT_CLICKED, nullptr);
     lv_obj_t *diagnosis_icon = lv_label_create(diagnosis);
     lv_label_set_text(diagnosis_icon, MDI_STETHOSCOPE);
     lv_obj_set_style_text_font(diagnosis_icon, &ui_font_mdi_32, 0);
-    lv_obj_set_style_text_color(diagnosis_icon, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(diagnosis_icon, ui_theme_btn_text(), 0);
     lv_obj_center(diagnosis_icon);
 
     last_heating_state = -1;

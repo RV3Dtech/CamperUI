@@ -19,7 +19,7 @@ lv_obj_t *label(lv_obj_t *parent,const char *value,int x,int y,const lv_font_t *
 void set_button(lv_obj_t *b,lv_obj_t *l,bool checked,bool ready) {
     if(checked)lv_obj_add_state(b,LV_STATE_CHECKED);else lv_obj_clear_state(b,LV_STATE_CHECKED);
     if(ready)lv_obj_clear_state(b,LV_STATE_DISABLED);else lv_obj_add_state(b,LV_STATE_DISABLED);
-    ui_text_color_if_changed(l,checked?lv_color_hex(0xffffff):ready?ui_theme_text():ui_theme_muted());
+    ui_text_color_if_changed(l,checked?ui_theme_btn_active_text():ready?ui_theme_btn_text():ui_theme_muted());
 }
 void mode_click(lv_event_t *event) {
     int mode=(int)(intptr_t)lv_event_get_user_data(event);
@@ -32,7 +32,7 @@ void mode_click(lv_event_t *event) {
 void build_modes(lv_obj_t *parent,ModeWidgets &w,int x,int y,int width) {
     int button_width=(width-16)/3;
     for(int i=0;i<3;++i){w.buttons[i]=lv_btn_create(parent);lv_obj_set_pos(w.buttons[i],x+i*(button_width+8),y);
-        lv_obj_set_width(w.buttons[i],button_width);ui_favorite_button_style(w.buttons[i]);
+        lv_obj_set_width(w.buttons[i],button_width);ui_favorite_button_style(w.buttons[i],ui_theme_relay());
         lv_obj_add_event_cb(w.buttons[i],mode_click,LV_EVENT_CLICKED,(void*)(intptr_t)modes[i]);
         w.labels[i]=label(w.buttons[i],captions[i],0,0,&lv_font_montserrat_16);lv_obj_center(w.labels[i]);}
 }
@@ -84,7 +84,7 @@ lv_obj_t *ui_build_victron_home_power(lv_obj_t *parent) {
         lv_label_set_long_mode(home_power_labels[i],LV_LABEL_LONG_DOT);
         lv_label_set_long_mode(home_power_values[i],LV_LABEL_LONG_DOT);
         lv_obj_set_style_text_color(home_power_labels[i],ui_theme_muted(),0);
-        lv_obj_set_style_text_color(home_power_values[i],lv_color_hex(UI_COLOR_WARNING),0);
+        lv_obj_set_style_text_color(home_power_values[i],ui_theme_text(),0);
     }
     ui_update_victron_home();return home_power_root;
 }
@@ -108,17 +108,27 @@ void ui_update_victron_home() {
 void ui_build_victron(lv_obj_t *parent) {
     root=parent;ui_setup_tab_page(parent);lv_obj_add_flag(parent,LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_scroll_dir(parent,LV_DIR_VER);lv_obj_set_style_pad_bottom(parent,12,0);
+    lv_obj_set_scrollbar_mode(parent,LV_SCROLLBAR_MODE_AUTO);
+    // Auto-sized body includes the bottom of every absolutely positioned child.
+    // Only the fixed page viewport scrolls; the global navigation stays outside.
+    lv_obj_t *body=lv_obj_create(parent);
+    lv_obj_remove_style_all(body);
+    lv_obj_set_pos(body,0,0);lv_obj_set_size(body,440,LV_SIZE_CONTENT);
+    lv_obj_set_style_pad_bottom(body,24,0);
+    lv_obj_clear_flag(body,LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_add_flag(body,LV_OBJ_FLAG_SCROLL_CHAIN_VER);
+    parent=body;
     heading=label(parent,"Victron / MultiPlus-II",0,0,&lv_font_montserrat_16);lv_obj_set_width(heading,384);
     lv_obj_t *settings_button=lv_btn_create(parent);
     lv_obj_set_pos(settings_button,396,0);lv_obj_set_size(settings_button,44,44);
-    lv_obj_set_style_radius(settings_button,12,0);
+    ui_control_surface_style(settings_button);
     lv_obj_set_style_bg_color(settings_button,ui_theme_card(),0);
-    lv_obj_set_style_border_width(settings_button,1,0);
+    lv_obj_set_style_border_width(settings_button,ui_border_width(),0);
     lv_obj_set_style_border_color(settings_button,ui_theme_border(),0);
     lv_obj_add_event_cb(settings_button,[](lv_event_t *){ui_open_victron_settings();},LV_EVENT_CLICKED,nullptr);
     lv_obj_t *gear=label(settings_button,MDI_COG,0,0,&ui_font_mdi_24);
-    lv_obj_set_style_text_color(gear,lv_color_hex(UI_COLOR_PRIMARY),0);lv_obj_center(gear);
-    lv_label_set_long_mode(heading,LV_LABEL_LONG_DOT);lv_obj_set_style_text_color(heading,lv_color_hex(UI_COLOR_PRIMARY),0);
+    lv_obj_set_style_text_color(gear,ui_theme_btn_text(),0);lv_obj_center(gear);
+    lv_label_set_long_mode(heading,LV_LABEL_LONG_DOT);lv_obj_set_style_text_color(heading,ui_theme_primary(),0);
     status=label(parent,"--",0,26,&lv_font_montserrat_12);lv_obj_set_width(status,384);
     lv_label_set_long_mode(status,LV_LABEL_LONG_DOT);
     build_modes(parent,detail_modes,0,52,440);
@@ -135,15 +145,17 @@ void ui_build_victron(lv_obj_t *parent) {
         lv_label_set_long_mode(relay_names[i],LV_LABEL_LONG_DOT);
         relay_labels[i]=label(card,"--",0,23,&lv_font_montserrat_12);lv_obj_set_width(relay_labels[i],265);
         lv_label_set_long_mode(relay_labels[i],LV_LABEL_LONG_DOT);
-        relay_buttons[i]=lv_btn_create(card);lv_obj_set_size(relay_buttons[i],112,44);lv_obj_set_style_radius(relay_buttons[i],12,0);
+        relay_buttons[i]=lv_btn_create(card);lv_obj_set_size(relay_buttons[i],112,44);ui_control_surface_style(relay_buttons[i]);
         lv_obj_align(relay_buttons[i],LV_ALIGN_RIGHT_MID,0,0);
         lv_obj_set_style_bg_color(relay_buttons[i],ui_theme_track(),0);
-        lv_obj_set_style_bg_color(relay_buttons[i],lv_color_hex(UI_COLOR_PRIMARY),LV_STATE_CHECKED);
+        lv_obj_set_style_bg_color(relay_buttons[i],ui_theme_relay(),LV_STATE_CHECKED);
+        lv_obj_set_style_border_color(relay_buttons[i],ui_theme_relay(),LV_STATE_CHECKED);
         lv_obj_add_event_cb(relay_buttons[i],relay_click,LV_EVENT_CLICKED,(void*)(intptr_t)i);
         lv_obj_t *button_label=label(relay_buttons[i],"--",0,0,&lv_font_montserrat_16);lv_obj_center(button_label);
     }
     extra=label(parent,"--",0,418,&lv_font_montserrat_12);lv_obj_set_width(extra,440);
     ui_update_victron();
+    lv_obj_update_layout(root);
 }
 void ui_update_victron() {
     if(!root)return;auto s=victron_snapshot();char line[220],v[20],i[20],p[20],f[20],soc[20],pv[20];

@@ -34,7 +34,8 @@ constexpr bool relays_debounce_independently() {
     RelayClickFilter f;
     return f.accept(0, 0) && !f.accept(0, 100) && f.accept(1, 100) &&
         f.accept(8, 100) && !f.accept(0, 599) && f.accept(0, 600) &&
-        !f.accept(-1, 1000) && !f.accept(16, 1000);
+        !f.accept(-1, 1000) && f.accept(16, 1000) && f.accept(31, 1000) &&
+        !f.accept(31, 1100) && !f.accept(32, 1000);
 }
 constexpr bool relay_clock_rollover() {
     RelayClickFilter f;

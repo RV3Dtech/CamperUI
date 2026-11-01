@@ -1,4 +1,5 @@
 #include "ui_main.h"
+#include "ui_control_style.h"
 namespace {
 lv_obj_t *favorite_select[2], *tank_select, *water_toggle, *victron_toggle;
 bool updating = false;
@@ -35,9 +36,9 @@ lv_obj_t *toggle_card(lv_obj_t *parent, const char *text, int x, int y, bool *se
     lv_obj_set_style_pad_ver(card, 4, 0);
     lv_obj_set_style_bg_color(card, ui_theme_card(), 0);
     lv_obj_set_style_bg_opa(card, LV_OPA_COVER, 0);
-    lv_obj_set_style_border_width(card, 1, 0);
+    lv_obj_set_style_border_width(card, ui_border_width(), 0);
     lv_obj_set_style_border_color(card, ui_theme_border(), 0);
-    lv_obj_set_style_radius(card, 8, 0);
+    lv_obj_set_style_radius(card, ui_radius_card(), 0);
 
     lv_obj_t *sw = lv_switch_create(card);
     lv_obj_set_size(sw, 46, 26);
@@ -65,6 +66,7 @@ lv_obj_t *choice(lv_obj_t *parent, const char *title, int y, int field) {
     lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
     lv_obj_set_pos(label, 0, y + 12);
     lv_obj_t *obj = lv_dropdown_create(parent);
+    ui_control_surface_style(obj);
     lv_obj_set_pos(obj, 145, y);
     lv_obj_set_size(obj, 285, 44);
     lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, 0);
@@ -100,7 +102,7 @@ void ui_build_home_settings(lv_obj_t *parent) {
     lv_label_set_text(title, "Home Dashboard");
     lv_obj_set_pos(title, 0, 0);
     lv_obj_set_style_text_font(title, &lv_font_montserrat_18, 0);
-    lv_obj_set_style_text_color(title, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(title, ui_theme_primary(), 0);
     toggle_card(parent, "Batterie", 0, 36, &state.home_show_battery);
     toggle_card(parent, "Solar", 220, 36, &state.home_show_solar);
     water_toggle=toggle_card(parent, "Wassertank", 0, 88, &state.home_show_water);
@@ -133,8 +135,10 @@ void ui_open_home_settings() {
         home_settings_screen = lv_obj_create(nullptr);
         lv_obj_clear_flag(home_settings_screen, LV_OBJ_FLAG_SCROLLABLE);
         lv_obj_set_style_bg_color(home_settings_screen, ui_theme_bg(), 0);
+        lv_obj_set_style_text_color(home_settings_screen, ui_theme_text(), 0);
         lv_obj_set_style_text_font(home_settings_screen, &lv_font_montserrat_14, 0);
         lv_obj_t *back = lv_btn_create(home_settings_screen);
+        ui_control_surface_style(back);
         lv_obj_set_pos(back, 12, 10);
         lv_obj_set_size(back, 105, 42);
         lv_obj_add_event_cb(back, [](lv_event_t *) {

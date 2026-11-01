@@ -686,7 +686,7 @@ void ui_settings_screen_init() {
     lv_obj_t *l_w = lv_label_create(t_net);
     lv_label_set_text(l_w, "WLAN Verbindung");
     lv_obj_set_style_text_font(l_w, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_w, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(l_w, ui_theme_primary(), 0);
     lv_obj_align(l_w, LV_ALIGN_TOP_LEFT, 0, 0);
     
     // Row 1: SSID Dropdown (w=305, h=44) + Scan Button (w=125, h=44)
@@ -735,7 +735,7 @@ void ui_settings_screen_init() {
     lv_obj_t *l_m = lv_label_create(t_net);
     lv_label_set_text(l_m, "VanPi Server IP");
     lv_obj_set_style_text_font(l_m, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_m, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(l_m, ui_theme_primary(), 0);
     lv_obj_align(l_m, LV_ALIGN_TOP_LEFT, 0, 136);
     
     ta_mqtt_ip = lv_textarea_create(t_net);
@@ -774,7 +774,7 @@ void ui_settings_screen_init() {
     lv_obj_t *l_web_head = lv_label_create(card_web_ota);
     lv_label_set_text(l_web_head, LV_SYMBOL_SETTINGS " Web-Interface & Einstellungen");
     lv_obj_set_style_text_font(l_web_head, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_web_head, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(l_web_head, ui_theme_primary(), 0);
     lv_obj_align(l_web_head, LV_ALIGN_TOP_LEFT, 0, 0);
 
     lbl_web_ota_url = lv_label_create(card_web_ota);
@@ -801,7 +801,7 @@ void ui_settings_screen_init() {
     lv_obj_t *l_disp = lv_label_create(t_gen);
     lv_label_set_text(l_disp, "Display & System");
     lv_obj_set_style_text_font(l_disp, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_disp, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(l_disp, ui_theme_primary(), 0);
     lv_obj_align(l_disp, LV_ALIGN_TOP_LEFT, 0, 0);
     
     lv_obj_t *l_bri = lv_label_create(t_gen);
@@ -905,7 +905,7 @@ void ui_settings_screen_init() {
     lv_obj_t *l_ui_sec = lv_label_create(t_gen);
     lv_label_set_text(l_ui_sec, "Navigation & Schoner");
     lv_obj_set_style_text_font(l_ui_sec, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_ui_sec, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(l_ui_sec, ui_theme_primary(), 0);
     lv_obj_align(l_ui_sec, LV_ALIGN_TOP_LEFT, 230, 0);
 
     lv_obj_t *btn_nav_modal = lv_btn_create(t_gen);
@@ -974,10 +974,10 @@ void ui_settings_screen_init() {
         lv_obj_t *card = lv_obj_create(parent);
         lv_obj_set_pos(card, x, y);
         lv_obj_set_size(card, w, h);
-        lv_obj_set_style_radius(card, 8, 0);
+        lv_obj_set_style_radius(card, ui_radius_card(), 0);
         lv_obj_set_style_bg_color(card, ui_theme_card(), 0);
         lv_obj_set_style_bg_opa(card, LV_OPA_COVER, 0);
-        lv_obj_set_style_border_width(card, 1, 0);
+        lv_obj_set_style_border_width(card, ui_border_width(), 0);
         lv_obj_set_style_border_color(card, ui_theme_border(), 0);
         lv_obj_set_style_pad_hor(card, 8, 0);
         lv_obj_set_style_pad_ver(card, 4, 0);
@@ -1024,7 +1024,7 @@ void ui_settings_screen_init() {
     lv_obj_t *l_pwr_prod = lv_label_create(t_vis);
     lv_label_set_text(l_pwr_prod, "Erzeuger (Power Dashboard)");
     lv_obj_set_style_text_font(l_pwr_prod, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_pwr_prod, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(l_pwr_prod, ui_theme_primary(), 0);
     lv_obj_align(l_pwr_prod, LV_ALIGN_TOP_LEFT, 0, 0);
 
     make_toggle_row(t_vis, 0, 26, 140, 42, "Solar", state.power_show_solar,
@@ -1061,7 +1061,7 @@ void ui_settings_screen_init() {
     lv_obj_t *l_vis = lv_label_create(t_vis);
     lv_label_set_text(l_vis, "Schalter & Dimmer Sichtbarkeit");
     lv_obj_set_style_text_font(l_vis, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_vis, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(l_vis, ui_theme_primary(), 0);
     lv_obj_align(l_vis, LV_ALIGN_TOP_LEFT, 0, 128);
 
     lv_obj_t *l_hdr_relays = lv_label_create(t_vis);
@@ -1076,6 +1076,22 @@ void ui_settings_screen_init() {
     lv_obj_set_style_text_color(l_hdr_dimmers, ui_theme_muted(), 0);
     lv_obj_align(l_hdr_dimmers, LV_ALIGN_TOP_LEFT, 229, 156);
 
+    // The master uses the same persisted flag as "Tabs anpassen".
+    // Keep every individual visibility preference when the group is hidden.
+    lv_obj_t *cont_dimmers = lv_obj_create(t_vis);
+    lv_obj_remove_style_all(cont_dimmers);
+    lv_obj_set_pos(cont_dimmers, 225, 226);
+    lv_obj_set_size(cont_dimmers, 215, 378);
+    lv_obj_clear_flag(cont_dimmers, LV_OBJ_FLAG_SCROLLABLE);
+    if (!state.tab_enabled[TAB_DIMMERS]) lv_obj_add_flag(cont_dimmers, LV_OBJ_FLAG_HIDDEN);
+    make_toggle_row(t_vis, 225, 178, 215, 42, "Dimmer anzeigen", state.tab_enabled[TAB_DIMMERS],
+        [](lv_event_t *e) {
+            state.tab_enabled[TAB_DIMMERS] = lv_obj_has_state(lv_event_get_target(e), LV_STATE_CHECKED);
+            auto *list = static_cast<lv_obj_t *>(lv_event_get_user_data(e));
+            if (state.tab_enabled[TAB_DIMMERS]) lv_obj_clear_flag(list, LV_OBJ_FLAG_HIDDEN);
+            else lv_obj_add_flag(list, LV_OBJ_FLAG_HIDDEN);
+        }, cont_dimmers);
+
     for (int i = 0; i < 8; i++) {
         lv_coord_t row_y = 178 + (i * 48);
 
@@ -1088,7 +1104,7 @@ void ui_settings_screen_init() {
             }, (void *)(intptr_t)i);
 
         // Dimmer (Right Column)
-        make_toggle_row(t_vis, 225, row_y, 215, 42, state.dimmer_names[i].c_str(), state.dimmer_visible[i],
+        make_toggle_row(cont_dimmers, 0, i * 48, 215, 42, state.dimmer_names[i].c_str(), state.dimmer_visible[i],
             [](lv_event_t *e) {
                 lv_obj_t *obj = lv_event_get_target(e);
                 int idx = (int)(intptr_t)lv_event_get_user_data(e);
@@ -1100,12 +1116,12 @@ void ui_settings_screen_init() {
     lv_obj_t *l_rext_head = lv_label_create(t_vis);
     lv_label_set_text(l_rext_head, "out-x-in Pro (Relais 9–16)");
     lv_obj_set_style_text_font(l_rext_head, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_rext_head, lv_color_hex(UI_COLOR_PRIMARY), 0);
-    lv_obj_align(l_rext_head, LV_ALIGN_TOP_LEFT, 0, 570);
+    lv_obj_set_style_text_color(l_rext_head, ui_theme_primary(), 0);
+    lv_obj_align(l_rext_head, LV_ALIGN_TOP_LEFT, 0, 618);
 
     lv_obj_t *cont_rext = lv_obj_create(t_vis);
     lv_obj_set_size(cont_rext, 440, 210);
-    lv_obj_align(cont_rext, LV_ALIGN_TOP_LEFT, 0, 648);
+    lv_obj_align(cont_rext, LV_ALIGN_TOP_LEFT, 0, 696);
     lv_obj_set_style_bg_opa(cont_rext, 0, 0);
     lv_obj_set_style_border_width(cont_rext, 0, 0);
     lv_obj_set_style_pad_all(cont_rext, 0, 0);
@@ -1113,11 +1129,11 @@ void ui_settings_screen_init() {
     if (!state.show_relay_ext) lv_obj_add_flag(cont_rext, LV_OBJ_FLAG_HIDDEN);
 
     lv_obj_t *card_master_rext = lv_obj_create(t_vis);
-    lv_obj_set_pos(card_master_rext, 0, 596);
+    lv_obj_set_pos(card_master_rext, 0, 644);
     lv_obj_set_size(card_master_rext, 440, 44);
-    lv_obj_set_style_radius(card_master_rext, 8, 0);
+    lv_obj_set_style_radius(card_master_rext, ui_radius_card(), 0);
     lv_obj_set_style_bg_color(card_master_rext, ui_theme_card(), 0);
-    lv_obj_set_style_border_width(card_master_rext, 1, 0);
+    lv_obj_set_style_border_width(card_master_rext, ui_border_width(), 0);
     lv_obj_set_style_border_color(card_master_rext, ui_theme_border(), 0);
     lv_obj_set_style_pad_hor(card_master_rext, 8, 0);
     lv_obj_clear_flag(card_master_rext, LV_OBJ_FLAG_SCROLLABLE);
@@ -1170,12 +1186,12 @@ void ui_settings_screen_init() {
     lv_obj_t *l_wr_head = lv_label_create(t_vis);
     lv_label_set_text(l_wr_head, "WiFi-Relais");
     lv_obj_set_style_text_font(l_wr_head, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_wr_head, lv_color_hex(UI_COLOR_PRIMARY), 0);
-    lv_obj_align(l_wr_head, LV_ALIGN_TOP_LEFT, 0, 870);
+    lv_obj_set_style_text_color(l_wr_head, ui_theme_primary(), 0);
+    lv_obj_align(l_wr_head, LV_ALIGN_TOP_LEFT, 0, 918);
 
     lv_obj_t *cont_wr = lv_obj_create(t_vis);
     lv_obj_set_size(cont_wr, 440, 210);
-    lv_obj_align(cont_wr, LV_ALIGN_TOP_LEFT, 0, 948);
+    lv_obj_align(cont_wr, LV_ALIGN_TOP_LEFT, 0, 996);
     lv_obj_set_style_bg_opa(cont_wr, 0, 0);
     lv_obj_set_style_border_width(cont_wr, 0, 0);
     lv_obj_set_style_pad_all(cont_wr, 0, 0);
@@ -1184,11 +1200,11 @@ void ui_settings_screen_init() {
 
     // Master Switch Row for WiFi Relais
     lv_obj_t *card_master_wr = lv_obj_create(t_vis);
-    lv_obj_set_pos(card_master_wr, 0, 896);
+    lv_obj_set_pos(card_master_wr, 0, 944);
     lv_obj_set_size(card_master_wr, 440, 44);
-    lv_obj_set_style_radius(card_master_wr, 8, 0);
+    lv_obj_set_style_radius(card_master_wr, ui_radius_card(), 0);
     lv_obj_set_style_bg_color(card_master_wr, ui_theme_card(), 0);
-    lv_obj_set_style_border_width(card_master_wr, 1, 0);
+    lv_obj_set_style_border_width(card_master_wr, ui_border_width(), 0);
     lv_obj_set_style_border_color(card_master_wr, ui_theme_border(), 0);
     lv_obj_set_style_pad_hor(card_master_wr, 8, 0);
     lv_obj_clear_flag(card_master_wr, LV_OBJ_FLAG_SCROLLABLE);
@@ -1238,12 +1254,12 @@ void ui_settings_screen_init() {
     lv_obj_t *l_dim_head = lv_label_create(t_vis);
     lv_label_set_text(l_dim_head, "Dimmer-Hardware");
     lv_obj_set_style_text_font(l_dim_head, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_dim_head, lv_color_hex(UI_COLOR_PRIMARY), 0);
-    lv_obj_align(l_dim_head, LV_ALIGN_TOP_LEFT, 0, 1170);
+    lv_obj_set_style_text_color(l_dim_head, ui_theme_primary(), 0);
+    lv_obj_align(l_dim_head, LV_ALIGN_TOP_LEFT, 0, 1218);
 
     lv_obj_t *cont_dimpro = lv_obj_create(t_vis);
     lv_obj_set_size(cont_dimpro, 440, 60);
-    lv_obj_align(cont_dimpro, LV_ALIGN_TOP_LEFT, 0, 1248);
+    lv_obj_align(cont_dimpro, LV_ALIGN_TOP_LEFT, 0, 1296);
     lv_obj_set_style_bg_opa(cont_dimpro, 0, 0);
     lv_obj_set_style_border_width(cont_dimpro, 0, 0);
     lv_obj_set_style_pad_all(cont_dimpro, 0, 0);
@@ -1251,11 +1267,11 @@ void ui_settings_screen_init() {
     if (!state.dimmy_pro) lv_obj_add_flag(cont_dimpro, LV_OBJ_FLAG_HIDDEN);
 
     lv_obj_t *card_master_dim = lv_obj_create(t_vis);
-    lv_obj_set_pos(card_master_dim, 0, 1196);
+    lv_obj_set_pos(card_master_dim, 0, 1244);
     lv_obj_set_size(card_master_dim, 440, 44);
-    lv_obj_set_style_radius(card_master_dim, 8, 0);
+    lv_obj_set_style_radius(card_master_dim, ui_radius_card(), 0);
     lv_obj_set_style_bg_color(card_master_dim, ui_theme_card(), 0);
-    lv_obj_set_style_border_width(card_master_dim, 1, 0);
+    lv_obj_set_style_border_width(card_master_dim, ui_border_width(), 0);
     lv_obj_set_style_border_color(card_master_dim, ui_theme_border(), 0);
     lv_obj_set_style_pad_hor(card_master_dim, 8, 0);
     lv_obj_clear_flag(card_master_dim, LV_OBJ_FLAG_SCROLLABLE);
@@ -1313,7 +1329,7 @@ void ui_settings_screen_init() {
     lv_obj_t *l_sec_rel = lv_label_create(t_val);
     lv_label_set_text(l_sec_rel, "Relais Zuordnung");
     lv_obj_set_style_text_font(l_sec_rel, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_sec_rel, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(l_sec_rel, ui_theme_primary(), 0);
     lv_obj_align(l_sec_rel, LV_ALIGN_TOP_LEFT, 0, 0);
 
     lv_obj_t *l_pump = lv_label_create(t_val);
@@ -1354,7 +1370,7 @@ void ui_settings_screen_init() {
     lv_obj_t *l_sec_sens = lv_label_create(t_val);
     lv_label_set_text(l_sec_sens, "Temperatursensoren & Leistung");
     lv_obj_set_style_text_font(l_sec_sens, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_sec_sens, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(l_sec_sens, ui_theme_primary(), 0);
     lv_obj_align(l_sec_sens, LV_ALIGN_TOP_LEFT, 0, 140);
 
     // Außensensor
@@ -1507,7 +1523,7 @@ void ui_settings_screen_init() {
     lv_obj_t *l_tanks = lv_label_create(t_val);
     lv_label_set_text(l_tanks, "Wassertanks Konfiguration");
     lv_obj_set_style_text_font(l_tanks, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_tanks, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(l_tanks, ui_theme_primary(), 0);
     lv_obj_align(l_tanks, LV_ALIGN_TOP_LEFT, 0, 608);
 
     // Anzahl Tanks
@@ -1590,7 +1606,7 @@ void ui_settings_screen_init() {
     lv_obj_t *l_sec_heat = lv_label_create(t_val);
     lv_label_set_text(l_sec_heat, "Heizung & Klima");
     lv_obj_set_style_text_font(l_sec_heat, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_sec_heat, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(l_sec_heat, ui_theme_primary(), 0);
     lv_obj_align(l_sec_heat, LV_ALIGN_TOP_LEFT, 0, 848);
 
     lv_obj_t *l_heat_type = lv_label_create(t_val);
@@ -1691,7 +1707,7 @@ void ui_settings_screen_init() {
     lv_obj_t *l_alm_title = lv_label_create(t_alm);
     lv_label_set_text(l_alm_title, "Smart Header Alarmschwellen");
     lv_obj_set_style_text_font(l_alm_title, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l_alm_title, lv_color_hex(UI_COLOR_PRIMARY), 0);
+    lv_obj_set_style_text_color(l_alm_title, ui_theme_primary(), 0);
     lv_obj_align(l_alm_title, LV_ALIGN_TOP_LEFT, 0, 4);
 
     // 1. Frost
@@ -1786,9 +1802,9 @@ void ui_settings_screen_init() {
     lv_obj_set_size(btn_cancel, 140, 48);
     lv_obj_align(btn_cancel, LV_ALIGN_BOTTOM_LEFT, 20, -8);
     lv_obj_set_style_bg_color(btn_cancel, ui_theme_card(), 0);
-    lv_obj_set_style_border_width(btn_cancel, 1, 0);
+    lv_obj_set_style_border_width(btn_cancel, ui_border_width(), 0);
     lv_obj_set_style_border_color(btn_cancel, ui_theme_border(), 0);
-    lv_obj_set_style_radius(btn_cancel, 10, 0);
+    lv_obj_set_style_radius(btn_cancel, ui_radius_button(), 0);
     lv_obj_set_style_shadow_width(btn_cancel, 0, 0);
     lv_obj_add_event_cb(btn_cancel, [](lv_event_t * e) {
         (void)e;
@@ -1808,7 +1824,7 @@ void ui_settings_screen_init() {
     lv_obj_set_size(btn_save, 288, 48);
     lv_obj_align(btn_save, LV_ALIGN_BOTTOM_RIGHT, -20, -8);
     lv_obj_set_style_bg_color(btn_save, lv_color_hex(UI_COLOR_SUCCESS), 0);
-    lv_obj_set_style_radius(btn_save, 10, 0);
+    lv_obj_set_style_radius(btn_save, ui_radius_button(), 0);
     lv_obj_add_event_cb(btn_save, [](lv_event_t * e) {
         int red = String(lv_textarea_get_text(ta_warn_bat)).toInt();
         int yellow = String(lv_textarea_get_text(ta_warn_bat_yellow)).toInt();
