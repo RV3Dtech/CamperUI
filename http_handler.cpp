@@ -1476,6 +1476,8 @@ bool http_start_task() {
         Serial.println("[HTTP] ERROR: worker allocation failed; Demo/Live data unavailable");
         return false;
     }
+    Serial.printf("[HTTP] VanPi target: %s | source=%s\n", get_url().c_str(),
+                  state.debug_mode ? "DEMO" : "LIVE");
     Serial.println("[HTTP] Background worker pinned to Core 0");
     return true;
 }

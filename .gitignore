@@ -33,3 +33,7 @@ Desktop.ini
 # Separate CamperCam project (do not track in git)
 /CamperCam/
 
+
+!docs/firmware/firmware-rv3d92-socfix/CamperUI-V1.9.1-RV3D.92-dev-Core-3.3.11-Diagnose.bin
+
+!docs/firmware/firmware-rv3d92-socfix/CamperUI-V1.9.1-RV3D.92-dev-Core-3.3.12-Diagnose.bin

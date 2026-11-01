@@ -1,4 +1,5 @@
 #include <lvgl.h>
+#include <esp_arduino_version.h>
 #include "Arduino_GFX_Library.h"
 #include "CamperRGBDisplay.h"
 #include "display_sync.h"
@@ -415,6 +416,8 @@ void setup() {
     delay(200);
     USBSerial.println("\n--- Waveshare ESP32-S3 CamperUI Starting ---");
     USBSerial.printf("CPU frequency: %u MHz\n", (unsigned)getCpuFrequencyMhz());
+    USBSerial.printf("[BUILD] Firmware: %s | Arduino-ESP32: %s | ESP-IDF: %s\n",
+                     CAMPERUI_VERSION, ESP_ARDUINO_VERSION_STR, ESP.getSdkVersion());
 
     state_init();
     temp_history_init();

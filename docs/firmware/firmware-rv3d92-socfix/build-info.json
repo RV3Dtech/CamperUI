@@ -1,9 +1,35 @@
 {
-  "file": "CamperUI-V1.9.1-RV3D.92-dev-SOC-Fix.bin",
-  "size": 2224528,
-  "sha256": "f5564702227bfd85f488925f514206113348ca0167f552c17f49d2804abe9d50",
-  "version": "V1.9.1-RV3D.92-dev",
-  "soc_fix": true,
-  "private_wifi_defaults_included": false,
-  "type": "OTA application image (not merged)"
+  "base_commit": "539676177d82269bfa6de4a153d7835acb9ea56a",
+  "changes": "Only startup diagnostics: actual Arduino core / ESP-IDF and effective VanPi URL",
+  "fqbn": "esp32:esp32:esp32s3:CPUFreq=240,CDCOnBoot=cdc,PSRAM=opi,FlashSize=16M,PartitionScheme=app3M_fat9M_16MB",
+  "artifacts": [
+    {
+      "file": "CamperUI-V1.9.1-RV3D.92-dev-Core-3.3.11-Diagnose.bin",
+      "core": "3.3.11",
+      "size": 2219920,
+      "sha256": "c8904bae8ce9d9267cb2a0b6e81f186d9b2fd8242febaf4a4c98f07dedab7208",
+      "source_sha256": "16391c0c9d7f625beb5863d0dfc9c302ae8a70bbe711f54c1a63f39c0a403347",
+      "external_libraries": {
+        "lvgl": "8.4.0",
+        "GFX Library for Arduino": "1.5.3",
+        "SensorLib": "0.2.6",
+        "ArduinoJson": "7.4.3"
+      },
+      "private_wifi_defaults_included": false
+    },
+    {
+      "file": "CamperUI-V1.9.1-RV3D.92-dev-Core-3.3.12-Diagnose.bin",
+      "core": "3.3.12",
+      "size": 2224704,
+      "sha256": "b6a5bc02d1d88d6acb9504c85045b7d5a13b3e71d2a1e7c93c22690e7cb1e722",
+      "source_sha256": "16391c0c9d7f625beb5863d0dfc9c302ae8a70bbe711f54c1a63f39c0a403347",
+      "external_libraries": {
+        "lvgl": "8.4.0",
+        "GFX Library for Arduino": "1.5.3",
+        "SensorLib": "0.2.6",
+        "ArduinoJson": "7.4.3"
+      },
+      "private_wifi_defaults_included": false
+    }
+  ]
 }
