@@ -1,0 +1,9 @@
+{
+  "file": "CamperUI-V1.9.1-RV3D.92-dev-SOC-Fix.bin",
+  "size": 2224528,
+  "sha256": "f5564702227bfd85f488925f514206113348ca0167f552c17f49d2804abe9d50",
+  "version": "V1.9.1-RV3D.92-dev",
+  "soc_fix": true,
+  "private_wifi_defaults_included": false,
+  "type": "OTA application image (not merged)"
+}
