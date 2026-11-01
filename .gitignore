@@ -2,6 +2,7 @@
 build/
 *.bin
 !docs/firmware/*.bin
+!docs/firmware/firmware-rv3d92-socfix/CamperUI-V1.9.1-RV3D.92-dev-SOC-Fix.bin
 *.elf
 *.hex
 *.map
