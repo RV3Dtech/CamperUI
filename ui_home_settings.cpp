@@ -27,10 +27,10 @@ void visibility_changed(lv_event_t *event) {
     }
     state_save(); ui_home_layout_changed(); ui_home_settings_refresh();
 }
-lv_obj_t *toggle_card(lv_obj_t *parent, const char *text, int x, int y, bool *setting) {
+lv_obj_t *toggle_card(lv_obj_t *parent, const char *text, int x, int y, bool *setting, int width = 212) {
     lv_obj_t *card = lv_obj_create(parent);
     lv_obj_set_pos(card, x, y);
-    lv_obj_set_size(card, 212, 44);
+    lv_obj_set_size(card, width, 44);
     lv_obj_clear_flag(card, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_pad_hor(card, 8, 0);
     lv_obj_set_style_pad_ver(card, 4, 0);
@@ -106,17 +106,20 @@ void ui_build_home_settings(lv_obj_t *parent) {
     toggle_card(parent, "Batterie", 0, 36, &state.home_show_battery);
     toggle_card(parent, "Solar", 220, 36, &state.home_show_solar);
     water_toggle=toggle_card(parent, "Wassertank", 0, 88, &state.home_show_water);
+    toggle_card(parent, "Display-Akku", 220, 140, &state.home_show_display_battery);
     victron_toggle=toggle_card(parent, "MultiPlus", 0, 140, &state.home_show_victron);
     toggle_card(parent, "Starterspannung", 220, 88, &state.home_show_starter);
     lv_obj_t *note = lv_label_create(parent);
     lv_obj_set_pos(note, 0, 194);
     lv_obj_set_width(note, 426);
-    lv_label_set_text(note, "Sofort gespeichert. Dummy/Live gilt für alle Seiten.\nTemperaturzuordnung: System-Einstellungen → Temperaturen.");
+    lv_label_set_text(note, "Sofort gespeichert. Display-Akku: immer echte Boardwerte.\nTemperaturzuordnung: System-Einstellungen → Temperaturen.");
     lv_obj_set_style_text_font(note, &lv_font_montserrat_12, 0);
     lv_obj_set_style_text_color(note, ui_theme_muted(), 0);
     toggle_card(parent, "Innen", 0, 254, &state.home_show_temp[0]);
     toggle_card(parent, "Außen", 220, 254, &state.home_show_temp[1]);
     toggle_card(parent, "Zusatz 1", 0, 306, &state.home_show_temp[2]);
+    toggle_card(parent, "Display-Akku anzeigen (Statusleiste)", 0, 358,
+                &state.home_show_display_battery_status, 432);
     for (int i = 0; i < 2; ++i) favorite_select[i] = choice(parent, i ? "Favorit 2" : "Favorit 1", 414 + i * 50, 3 + i);
     tank_select = choice(parent, "Tankquelle", 524, 5);
     ui_home_settings_refresh();

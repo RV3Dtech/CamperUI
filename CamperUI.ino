@@ -18,6 +18,7 @@
 #include "buzzer.h"
 #include "debug_log.h"
 #include "temp_history.h"
+#include "display_battery.h"
 #include "energy_history.h"
 #include "victron_client.h"
 #include "touch_release_filter.h"
@@ -420,6 +421,7 @@ void setup() {
                      CAMPERUI_VERSION, ESP_ARDUINO_VERSION_STR, ESP.getSdkVersion());
 
     state_init();
+    display_battery_init();
     temp_history_init();
     energy_history_init();
     http_init();
@@ -656,6 +658,7 @@ void loop() {
 
     buzzer_loop();
     temp_history_tick();
+    display_battery_tick();
     energy_history_tick();
     victron_tick();
 

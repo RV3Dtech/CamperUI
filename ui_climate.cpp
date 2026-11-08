@@ -13,6 +13,7 @@ static lv_obj_t *lbl_btn_temp_plus = nullptr;
 static lv_obj_t *btn_start_stop;
 static lv_obj_t *lbl_btn_start_stop;
 static lv_obj_t *dd_mode;
+static lv_obj_t *btn_diagnostics = nullptr;
 static lv_obj_t *card_webasto = nullptr;
 static lv_obj_t *lbl_webasto_temp = nullptr;
 static lv_obj_t *lbl_webasto_volt = nullptr;
@@ -41,7 +42,7 @@ static lv_obj_t *diagnostic_label(lv_obj_t *parent, const char *caption, int x, 
     return label;
 }
 static void open_diagnostics(lv_event_t *) {
-    if (diagnostics_overlay) return;
+    if (state.heater_type != HEATER_TYPE_AUTOTERM || diagnostics_overlay) return;
     lv_mem_monitor_t memory; lv_mem_monitor(&memory);
     if (memory.free_biggest_size < 32768) {
         lv_obj_t *box = lv_msgbox_create(nullptr, "Diagnose", "Zu wenig freier Speicher.", nullptr, true);
@@ -109,11 +110,12 @@ static String heater_status_text(const String &raw) {
 
 static void update_diagnostics() {
     if (!diagnostics_overlay) return;
+    if (state.heater_type != HEATER_TYPE_AUTOTERM) { close_diagnostics(nullptr); return; }
     StateLockGuard lock;
     const auto &diag = state.heater_diagnostics;
     const bool same_source = state.data_is_demo == state.debug_mode && diag.demo == state.debug_mode;
     const bool connected = state.wifi_connected && state.vanpi_connected;
-    const bool fresh = same_source && diag.fresh(millis(), state.debug_mode, connected);
+    const bool fresh = diag.source_type == HEATER_TYPE_AUTOTERM && same_source && diag.fresh(millis(), state.debug_mode, connected);
     const char *formats[] = {"%.1f V", "%.0f U/min", "%.2f Hz", "%.0f °C"};
     for (int i = 0; i < 4; ++i) {
         if (fresh && (diag.fields & (1U << i))) ui_label_set_float(diagnostics_values[i], formats[i], diag.values[i]);
@@ -193,7 +195,17 @@ static void update_arc_color(lv_obj_t *arc) {
     lv_obj_set_style_border_width(arc, 4, LV_PART_KNOB);
 }
 
+static void update_diagnostics_access() {
+    const bool supported = state.heater_type == HEATER_TYPE_AUTOTERM;
+    if (btn_diagnostics) {
+        if (supported) lv_obj_clear_flag(btn_diagnostics, LV_OBJ_FLAG_HIDDEN);
+        else lv_obj_add_flag(btn_diagnostics, LV_OBJ_FLAG_HIDDEN);
+    }
+    if (!supported && diagnostics_overlay) close_diagnostics(nullptr);
+}
+
 static void update_ui_from_mode() {
+    update_diagnostics_access();
     if (is_webasto_heater(state.heater_type)) {
         if (dd_mode) lv_obj_add_flag(dd_mode, LV_OBJ_FLAG_HIDDEN);
         if (card_webasto) lv_obj_clear_flag(card_webasto, LV_OBJ_FLAG_HIDDEN);
@@ -408,26 +420,25 @@ void ui_update_climate_tab() {
     }
 
     update_status_label();
+    update_diagnostics_access();
     update_diagnostics();
 
     if (is_webasto_heater(state.heater_type)) {
+        StateLockGuard lock;
+        const auto &telemetry = state.heater_diagnostics;
+        const bool connected = state.wifi_connected && state.vanpi_connected &&
+                               state.data_is_demo == state.debug_mode;
+        const uint32_t now = millis();
+        const bool same_source = state.data_is_demo == state.debug_mode;
         if (lbl_webasto_temp) {
-            if (state.webasto_temp > 0.0f) {
-                char buf[32];
-                snprintf(buf, sizeof(buf), "Heizer: %.0f C", state.webasto_temp);
-                ui_label_set_text_if_changed(lbl_webasto_temp, buf);
-            } else {
-                ui_label_set_text_if_changed(lbl_webasto_temp, "Heizer: -- C");
-            }
+            if (same_source && telemetry.available(3, now, state.debug_mode, connected, HEATER_TYPE_WEBASTO))
+                ui_label_set_float(lbl_webasto_temp, "Heizer: %.0f C", telemetry.values[3]);
+            else ui_label_set_text_if_changed(lbl_webasto_temp, "Heizer: -- C");
         }
         if (lbl_webasto_volt) {
-            if (state.webasto_voltage > 5.0f) {
-                char buf[32];
-                snprintf(buf, sizeof(buf), "Spannung: %.1f V", state.webasto_voltage);
-                ui_label_set_text_if_changed(lbl_webasto_volt, buf);
-            } else {
-                ui_label_set_text_if_changed(lbl_webasto_volt, "Spannung: --.- V");
-            }
+            if (same_source && telemetry.available(0, now, state.debug_mode, connected, HEATER_TYPE_WEBASTO))
+                ui_label_set_float(lbl_webasto_volt, "Spannung: %.1f V", telemetry.values[0]);
+            else ui_label_set_text_if_changed(lbl_webasto_volt, "Spannung: --.- V");
         }
     }
 
@@ -515,6 +526,7 @@ void ui_climate_reset() {
     btn_start_stop = nullptr;
     lbl_btn_start_stop = nullptr;
     dd_mode = nullptr;
+    btn_diagnostics = nullptr;
     card_webasto = nullptr;
     lbl_webasto_temp = nullptr;
     lbl_webasto_volt = nullptr;
@@ -702,7 +714,8 @@ void ui_build_climate(lv_obj_t *parent) {
     lv_obj_center(lbl_btn_start_stop);
     
     // Read-only diagnosis, directly beside the Start/Stop control.
-    lv_obj_t *diagnosis = lv_btn_create(parent);
+    btn_diagnostics = lv_btn_create(parent);
+    lv_obj_t *diagnosis = btn_diagnostics;
     lv_obj_set_size(diagnosis, 54, 54);
     lv_obj_align_to(diagnosis, btn_start_stop, LV_ALIGN_OUT_RIGHT_MID, 12, 0);
     ui_chart_button_style(diagnosis, false);

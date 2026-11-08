@@ -89,6 +89,7 @@ void web_settings_register_routes(WebServer &server) {
             doc["bat_capacity_ah"] = state.bat_capacity_ah;
 
 
+            doc["home_show_display_battery"] = state.home_show_display_battery;
             doc["home_show_battery"] = state.home_show_battery;
             doc["home_show_starter"] = state.home_show_starter;
             doc["home_show_solar"] = state.home_show_solar;
@@ -337,6 +338,7 @@ void web_settings_register_routes(WebServer &server) {
             if (doc["bat_capacity_ah"].is<float>()) state.bat_capacity_ah = doc["bat_capacity_ah"].as<float>();
 
 
+            if (doc["home_show_display_battery"].is<bool>()) state.home_show_display_battery = doc["home_show_display_battery"].as<bool>();
             if (doc["home_show_battery"].is<bool>()) state.home_show_battery = doc["home_show_battery"].as<bool>();
             if (doc["home_show_starter"].is<bool>()) state.home_show_starter = doc["home_show_starter"].as<bool>();
             if (doc["home_show_solar"].is<bool>()) state.home_show_solar = doc["home_show_solar"].as<bool>();

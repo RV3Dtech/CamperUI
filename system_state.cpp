@@ -136,6 +136,8 @@ void state_init() {
         char key[16]; snprintf(key, sizeof(key), "home_fav%d", i);
         state.home_favorite[i] = constrain(prefs.getInt(key, i == 0 ? 1 : 3), 0, 18);
     }
+    state.home_show_display_battery = prefs.getBool("home_disp_bat", false);
+    state.home_show_display_battery_status = prefs.getBool("home_da_status", false);
     state.home_show_battery = prefs.getBool("home_bat", true);
     state.home_show_starter = prefs.getBool("home_starter", true);
     state.home_show_solar = prefs.getBool("home_solar", true);
@@ -311,8 +313,6 @@ void state_init() {
     state.heater_status = "";
     state.heater_error = "no";
     state.fan_on = false;
-    state.webasto_temp = 0.0f;
-    state.webasto_voltage = 0.0f;
     state.heater_type = constrain(rv_migrate_heater_type(prefs.getInt("heater_type", HEATER_TYPE_AUTOTERM),
         rv_cfg_version<2 && (legacy_rv_tabs || saved_order_bytes<=10)), 0, 4);
     state.heater_temp_buttons = prefs.getBool("ht_btns", false);
@@ -404,6 +404,8 @@ void state_save() {
         char key[16]; snprintf(key, sizeof(key), "home_fav%d", i);
         prefs.putInt(key, state.home_favorite[i]);
     }
+    prefs.putBool("home_disp_bat", state.home_show_display_battery);
+    prefs.putBool("home_da_status", state.home_show_display_battery_status);
     prefs.putBool("home_bat", state.home_show_battery);
     prefs.putBool("home_starter", state.home_show_starter);
     prefs.putBool("home_solar", state.home_show_solar);

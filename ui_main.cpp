@@ -2,6 +2,7 @@
 #include "ui_victron.h"
 #include "ui_energy_history.h"
 #include "ui_layout_metrics.h"
+#include "display_battery.h"
 #include "wifi_diagnostics.h"
 #include "buzzer.h"
 #include <WiFi.h>
@@ -20,6 +21,7 @@ static lv_obj_t *lbl_time;
 static lv_obj_t *lbl_wifi;
 static lv_obj_t *lbl_soc_icon;
 static lv_obj_t *lbl_soc;
+static lv_obj_t *lbl_display_soc;
 static lv_obj_t *lbl_temp;
 static lv_obj_t *lbl_pump_status;
 static lv_obj_t *lbl_heater_status;
@@ -404,7 +406,7 @@ void ui_init() {
 
     // Smart Header Badges Container (Middle)
     badge_cont = lv_obj_create(status_bar);
-    lv_obj_set_size(badge_cont, 140, 24);
+    lv_obj_set_size(badge_cont, 144, 24); // Ends before the right-side pump indicator.
     lv_obj_align(badge_cont, LV_ALIGN_LEFT_MID, 76, 0);
     lv_obj_set_style_bg_opa(badge_cont, LV_OPA_0, 0);
     lv_obj_set_style_border_width(badge_cont, 0, 0);
@@ -431,6 +433,12 @@ void ui_init() {
     badge_frost = make_badge(badge_cont, MDI_SNOWFLAKE, lv_color_hex(0x1a2e45), lv_color_hex(UI_COLOR_PRIMARY));
     badge_fresh = make_badge(badge_cont, MDI_WATER,     lv_color_hex(0x122e4d), lv_color_hex(UI_COLOR_PRIMARY));
     badge_waste = make_badge(badge_cont, MDI_ALERT,     lv_color_hex(0x451a1a), lv_color_hex(UI_COLOR_DANGER));
+
+    lbl_display_soc = lv_label_create(badge_cont);
+    lv_label_set_text(lbl_display_soc, "DA --%");
+    lv_obj_set_style_text_font(lbl_display_soc, &lv_font_montserrat_12, 0);
+    lv_obj_set_style_text_letter_space(lbl_display_soc, 0, 0);
+    lv_obj_add_flag(lbl_display_soc, LV_OBJ_FLAG_HIDDEN);
 
     // Right side indicators (cleanly spaced, modern MDI icons)
     lbl_wifi = lv_label_create(status_bar);
@@ -766,6 +774,22 @@ void ui_update_data() {
         }
     }
     
+    if (state.home_show_display_battery_status) {
+        const int percent = display_battery_estimated_soc(millis());
+        char text[12] = "DA --%";
+        lv_color_t color = ui_theme_text();
+        if (percent >= 0) {
+            snprintf(text, sizeof(text), "DA %d%%", percent);
+            if (percent <= 10) color = lv_color_hex(UI_COLOR_DANGER);
+            else if (percent <= 20) color = lv_color_hex(UI_COLOR_WARNING);
+        }
+        ui_label_set_text_if_changed(lbl_display_soc, text);
+        ui_text_color_if_changed(lbl_display_soc, color);
+        lv_obj_clear_flag(lbl_display_soc, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(lbl_display_soc, LV_OBJ_FLAG_HIDDEN);
+    }
+
     // Update Debug Info
     if (active_page == TAB_SETTINGS && lbl_debug_info != NULL) {
         String debug_txt = state.debug_mode ? "Demo " CAMPERUI_VERSION : CAMPERUI_VERSION;

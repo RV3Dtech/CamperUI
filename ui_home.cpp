@@ -4,6 +4,8 @@
 #include "victron_client.h"
 #include "ui_victron.h"
 #include "ui_control_style.h"
+#include "display_battery.h"
+#include "ui_display_battery.h"
 #include "home_mp_activity.h"
 #include <math.h>
 namespace {
@@ -12,6 +14,7 @@ lv_obj_t *favorites[2], *favorite_text[2], *temperatures[3], *temp_name[3], *tem
 lv_obj_t *battery, *bat_title, *bat_power, *bat_detail, *starter;
 lv_obj_t *solar, *solar_power, *solar_detail, *water, *water_title, *water_value, *water_bar;
 lv_obj_t *multiplus,*mp_power;
+lv_obj_t *display_battery_card, *db_voltage, *db_range, *db_status;
 HomeMpActivity mp_activity;
 uint32_t favorite_accent[2] = {UINT32_MAX, UINT32_MAX};
 uint8_t remembered_dimmer[8] = {};
@@ -67,6 +70,10 @@ void layout() {
     visible(water, state.home_show_water && !state.home_show_victron); lv_obj_set_pos(water, 0, y);
     if (state.home_show_victron && !multiplus) multiplus=ui_build_victron_home(root);
     if (multiplus) { visible(multiplus,state.home_show_victron);lv_obj_set_pos(multiplus,0,y); }
+    if (state.home_show_victron && multiplus) y += lv_obj_get_height(multiplus) + row_gap;
+    else if (state.home_show_water) y += lv_obj_get_height(water) + row_gap;
+    visible(display_battery_card, state.home_show_display_battery);
+    lv_obj_set_pos(display_battery_card, 0, y);
     lv_obj_update_layout(root);
     lv_obj_scroll_to_y(root, lv_obj_get_scroll_y(root), LV_ANIM_OFF);
 }
@@ -107,10 +114,36 @@ void value(lv_obj_t *obj, const char *format, float number, bool ready) {
     else ui_label_set_text_if_changed(obj, "--");
 }
 }
-void ui_home_reset() { root = multiplus = mp_power = nullptr; mp_activity=HomeMpActivity(); ui_victron_home_reset(); }
+void ui_home_reset() { ui_display_battery_reset(); root = multiplus = mp_power = display_battery_card = nullptr; mp_activity=HomeMpActivity(); ui_victron_home_reset(); }
 void ui_home_layout_changed() { layout(); }
+static void update_display_battery() {
+    if (!display_battery_card || !state.home_show_display_battery) return;
+    const auto reading = display_battery_snapshot();
+    const auto snapshot = display_battery_test_snapshot();
+    const auto &runtime = snapshot.runtime;
+    const bool fresh = reading.fresh(millis());
+    char text[128],duration[48];
+    if (fresh) ui_label_set_float(db_voltage, "%.3f V", DisplayBatteryReading::batteryVoltage(reading.raw));
+    else ui_label_set_text_if_changed(db_voltage, "-- V");
+    ui_format_battery_runtime(duration,sizeof(duration),runtime.current.elapsed_ms,runtime.current.lower_bound);
+    switch(runtime.state) {
+        case BatteryTestState::Running: snprintf(text,sizeof(text),"Test läuft / %s",duration); break;
+        case BatteryTestState::Stopped: snprintf(text,sizeof(text),"Teiltest beendet / %s",duration); break;
+        case BatteryTestState::Interrupted: snprintf(text,sizeof(text),"Unterbrochen / %s",duration); break;
+        default: snprintf(text,sizeof(text),"Test starten: Kachel antippen"); break;
+    }
+    ui_label_set_text_if_changed(db_status,text);
+    if(runtime.current.minimum_valid) snprintf(text,sizeof(text),"Test-Min: %.3f V%s",runtime.current.minimum_mv/1000.0,
+            snapshot.storage_ok ? "" : " / Sicherung fehlgeschlagen");
+    else snprintf(text,sizeof(text),"Test-Min: --%s",snapshot.storage_ok ? " / echte lokale Boardwerte" : " / Sicherung fehlgeschlagen");
+    ui_label_set_text_if_changed(db_range,text);
+    ui_text_color_if_changed(db_status,runtime.state==BatteryTestState::Interrupted || !snapshot.storage_ok ?
+                              lv_color_hex(UI_COLOR_WARNING) : ui_theme_text());
+}
 void ui_update_home() {
     if (!root) return;
+    ui_display_battery_update();
+    update_display_battery();
     if(update_mp_activity())layout();
     char text[96];
     bool ready = source_ready();
@@ -238,5 +271,12 @@ void ui_build_home(lv_obj_t *parent) {
     lv_obj_set_style_bg_color(water_bar, ui_theme_tank(), LV_PART_INDICATOR);
     for (auto card : temperatures) link(card, state.tab_enabled[TAB_TEMPS] ? TAB_TEMPS : (state.tab_enabled[TAB_TRUMA] ? TAB_TRUMA : TAB_CLIMATE));
     link(battery, TAB_POWER); link(solar, TAB_POWER); link(water, TAB_WATER);
+    display_battery_card = ui_create_card(parent, 464, 124);
+    label(display_battery_card, "Display-Akku / Diagnose >", 0, 0, &lv_font_montserrat_16);
+    db_voltage = label(display_battery_card, "-- V", 0, 24, &lv_font_montserrat_28);
+    db_status = label(display_battery_card, "Test starten: Kachel antippen", 0, 62, &lv_font_montserrat_14);
+    db_range = label(display_battery_card, "Test-Min: --", 0, 84, &lv_font_montserrat_12);
+    lv_obj_add_flag(display_battery_card,LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_add_event_cb(display_battery_card,[](lv_event_t*){ui_display_battery_open();},LV_EVENT_CLICKED,nullptr);
     update_mp_activity();layout();
 }

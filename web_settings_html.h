@@ -1271,6 +1271,10 @@ static const char SETTINGS_HTML[] PROGMEM = R"rawliteral(
           </div>
           <div class="toggle-row"><div class="toggle-info"><div class="toggle-title">MultiPlus-Kachel statt Wasser</div></div>
             <label class="switch"><input type="checkbox" id="home_show_victron" onchange="homeEnergyChoice(true)"><span class="slider"></span></label></div>
+          <div class="toggle-row">
+            <div class="toggle-info"><div class="toggle-title">Display-Akku (Test)</div><div class="toggle-desc">Lokale Waveshare-Spannung und ADC-Werte, auch im Demo-Modus. Kein gemessener SOC oder Ladestatus.</div></div>
+            <label class="switch"><input type="checkbox" id="home_show_display_battery"><span class="slider"></span></label>
+          </div>
           <div class="field" style="margin-top:12px;">
             <label class="label">Wasser-Quelle auf Home</label>
             <select id="home_water_source">
@@ -1495,6 +1499,7 @@ static const char SETTINGS_HTML[] PROGMEM = R"rawliteral(
           document.getElementById('bat_capacity_ah').value = data.bat_capacity_ah || 100;
 
           // Home Widgets
+          document.getElementById('home_show_display_battery').checked = !!data.home_show_display_battery;
           document.getElementById('home_show_battery').checked = !!data.home_show_battery;
           document.getElementById('home_show_starter').checked = !!data.home_show_starter;
           document.getElementById('home_show_solar').checked = !!data.home_show_solar;
@@ -1844,6 +1849,7 @@ static const char SETTINGS_HTML[] PROGMEM = R"rawliteral(
         alt_max_w: parseFloat(document.getElementById('alt_max_w').value) || 600,
         bat_capacity_ah: parseFloat(document.getElementById('bat_capacity_ah').value) || 100,
 
+        home_show_display_battery: document.getElementById('home_show_display_battery').checked,
         home_show_battery: document.getElementById('home_show_battery').checked,
         home_show_starter: document.getElementById('home_show_starter').checked,
         home_show_solar: document.getElementById('home_show_solar').checked,

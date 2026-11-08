@@ -459,6 +459,31 @@ static void parse_temp_json(const char *payload) {
 //   "targettemp_vanpi": num, "mode": str, "powerlevel": int, "fanspeed": int }, ... }
 static void parse_dometic_object(JsonObject rc10);
 
+// /heater uses root fields for Webasto/generic; autoterm1 is a separate device.
+// Caller holds StateLockGuard. Never borrow Autoterm telemetry for Webasto.
+static void parse_heater_telemetry(JsonObject root) {
+    const bool use_at = state.heater_type == HEATER_TYPE_AUTOTERM && root["autoterm1"].is<JsonObject>();
+    JsonObject source = use_at ? root["autoterm1"].as<JsonObject>() : root;
+    auto &diag = state.heater_diagnostics;
+    const bool present = use_at || source.containsKey("heatstatus") || source.containsKey("heatvolt") ||
+                         source.containsKey("heatfan") || source.containsKey("heattemp") ||
+                         source.containsKey("heatpump") || source.containsKey("heatglow");
+    diag.begin(millis(), state.data_is_demo, present);
+    diag.source_type = state.heater_type;
+    // The bundled VanPi flow exposes fuel-pump frequency as historical key heatglow.
+    const char *keys[4] = {"heatvolt", "heatfan", source.containsKey("heatpump") ? "heatpump" : "heatglow", "heattemp"};
+    for (unsigned i = 0; i < 4; ++i) {
+        JsonVariant v = source[keys[i]];
+        if (validEnergyNumber(v)) {
+            const float number = jsonFloat(v);
+            bool valid = i == 3 || number >= 0.0f;
+            // VanPi initializes missing Webasto voltage to 0. It is not a measurement.
+            if (is_webasto_heater(state.heater_type) && i == 0) valid = number > 5.0f;
+            diag.set(i, number, valid);
+        }
+    }
+}
+
 static void parse_heater_json(const char *payload) {
     DynamicJsonDocument doc(2048);
     if (deserializeJson(doc, payload)) return;
@@ -486,29 +511,7 @@ static void parse_heater_json(const char *payload) {
 
     StateLockGuard lock;
     // Read diagnostics before the control hold-off: telemetry keeps updating during interaction.
-    JsonObject source = use_at ? at : doc.as<JsonObject>();
-    auto &diag = state.heater_diagnostics;
-    const bool present = has_at || source.containsKey("heatstatus") || source.containsKey("heatvolt") ||
-                         source.containsKey("heatfan") || source.containsKey("heattemp") ||
-                         source.containsKey("heatpump") || source.containsKey("heatglow");
-    diag.begin(millis(), state.data_is_demo, present);
-    // The bundled VanPi flow exposes fuel-pump frequency as historical key heatglow.
-    const char *keys[4] = {"heatvolt", "heatfan", source.containsKey("heatpump") ? "heatpump" : "heatglow", "heattemp"};
-    for (unsigned i = 0; i < 4; ++i) {
-        JsonVariant v = source[keys[i]];
-        if (validEnergyNumber(v)) {
-            float number = jsonFloat(v);
-            diag.set(i, number, i == 3 || number >= 0.0f);
-        }
-    }
-    if (is_webasto_heater(state.heater_type)) {
-        if (doc.containsKey("heatvolt") && validEnergyNumber(doc["heatvolt"])) {
-            state.webasto_voltage = jsonFloat(doc["heatvolt"]);
-        }
-        if (doc.containsKey("heattemp") && validEnergyNumber(doc["heattemp"])) {
-            state.webasto_temp = jsonFloat(doc["heattemp"]);
-        }
-    }
+    parse_heater_telemetry(doc.as<JsonObject>());
     if (state.heater_status != raw_hs) {
         state.heater_status = raw_hs;
         state.heater_status.trim();
@@ -1312,7 +1315,10 @@ static void http_put(String endpoint) {
     http.begin(get_url() + endpoint);
     http.setConnectTimeout(400);
     http.setTimeout(1500);
-    http.addHeader("Content-Type", "application/json");
+    // Some VanPi /wrelay flows call payload.includes(): JSON {} becomes an object
+    // in Node-RED. Keep this body as text for WLAN relay commands only.
+    const bool wlan_relay = endpoint.startsWith("/wrelay/");
+    http.addHeader("Content-Type", wlan_relay ? "text/plain; charset=utf-8" : "application/json");
     int code = http.PUT("{}");
     if (code != 200) {
         Serial.printf("[HTTP] PUT %s -> %d\n", endpoint.c_str(), code);
