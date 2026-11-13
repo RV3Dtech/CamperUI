@@ -79,6 +79,7 @@ void open_screen(void *arg) {
     lv_chart_set_type(chart,LV_CHART_TYPE_LINE);
     lv_chart_set_axis_tick(chart,LV_CHART_AXIS_PRIMARY_Y,5,0,5,1,true,52);
     ui_chart_grid_style(chart);
+    lv_obj_set_style_size(chart, 3, LV_PART_INDICATOR); // Show isolated readings across gaps.
     lv_obj_set_style_pad_all(chart,0,0);
     lv_chart_set_div_line_count(chart,4,0);
     lv_obj_clear_flag(chart,LV_OBJ_FLAG_SCROLLABLE);
@@ -163,7 +164,7 @@ void ui_energy_history_update() {
         snprintf(caption,sizeof(caption),"%s",track==0?"Ladezustand":track==1?"Lade- / Entladeleistung":"Solarleistung");
     } else {
         lv_label_set_text(scale_max,"Max: --"); lv_label_set_text(scale_min,"Min: --");
-        snprintf(caption,sizeof(caption),"%s",energy_history_available()?"Noch keine vollständige Messminute":"Verlauf-Speicher nicht verfügbar");
+        snprintf(caption,sizeof(caption),"%s",energy_history_available()?"Keine Messwerte für diesen Zeitraum":"Verlauf-Speicher nicht verfügbar");
     }
     lv_obj_align(scale_min,LV_ALIGN_TOP_RIGHT,-6,2);
     lv_label_set_text(summary,caption);
